@@ -45,7 +45,7 @@
                             <td>{{ $item->harga }}</td>
                             <td>{{ $item->status }}</td>
                             <td>
-                                <form class="row d-flex align-items-center" style="width:200px"  action="{{ '/'.$item->id }}" method="POST">
+                                <form class="row d-flex align-items-center" style="width:200px"  action="{{ '/beli/'.$item->id }}" method="POST">
                                     @csrf
                                     <div class="col-7 p-0">
                                         <input id="jumlah" placeholder="jumlah" name="jumlah" type="number" class="form-control" required>

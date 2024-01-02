@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
@@ -14,11 +16,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data_users = DB::table('users')->where('delete',0)->get();
+        $data_users = DB::table('users')->where('users.delete',0)->get();
         $roles = DB::table('role')->where('delete',0)->get();
+        $data_akun = DB::table('users')
+                    ->join('role', 'users.role', '=', 'role.id')
+                    ->select('users.*','role.nama_role')
+                    ->where('users.id',(Auth::user()->id))->first();
         $data = [
             'data_users' => $data_users,
-            'roles' => $roles
+            'roles' => $roles,
+            'data_akun' => $data_akun
         ];
         return view('Content.Karyawan')->with($data);
     }
@@ -83,13 +90,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $data_user = DB::table('users')->get();
-        // $profile = DB::table('users')->where('id', $id);
-        // $data = [
-        //     'data_user' => $data_user,
-        //     'profile' => $profile
-        // ];
-        return view('Content.Karyawan')->with('data',$data_user);
+        // $data_user = DB::table('users')->get();
     }
 
     /**
@@ -97,7 +98,13 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $profile = DB::table('users')->where('id', $id);
+        $data = [
+            'username' => $request->username,
+            'role' => $request->role
+        ];
+        DB::table('users')->where('id', $id)->update($data);
+        return Redirect('Karyawan')->with('success','Berhasil melakukan update');
     }
 
     public function restore(string $id){

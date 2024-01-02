@@ -2,11 +2,13 @@
 
 @section('content')
 <div class="pagetitle">
-    <h1>Tambah Barang</h1>
+    <h1>Edit Barang</h1>
     <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-      </ol>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Barang">Barang</a></li>
+            <li class="breadcrumb-item active">Edit Barang</li>
+          </ol>
     </nav>
   </div><!-- End Page Title -->
 

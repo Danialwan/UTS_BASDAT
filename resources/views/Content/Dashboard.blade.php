@@ -166,8 +166,8 @@
                             <td>{{ $item->total_nilai }}</td>
                             <td>{{ $item->username }}</td>
                             <td>
-                                <a href="{{ '/'.$item->id }}" class="btn btn-success btn-sm">View</a>
-                                <form class="d-inline" action="{{ '/'.$item->id }}" method="POST">
+                                <a href="{{ '/beli/'.$item->id }}" class="btn btn-success btn-sm">View</a>
+                                <form class="d-inline" action="{{ '/beli/'.$item->id }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Delete</button>

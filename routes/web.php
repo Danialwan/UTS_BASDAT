@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PengadaanController;
 use App\Http\Controllers\PenjualanController;
@@ -35,6 +36,8 @@ Route::get('/home', function () {
 
 Route::middleware(['auth'])->group(function(){
 
+    Route::GET('/Log', [LogController::class, 'index']);
+
     Route::GET('/Logout', [SessionController::class,'logout']);
     Route::resource('Barang', BarangController::class);
     Route::resource('Satuan', SatuanController::class);
@@ -56,11 +59,11 @@ Route::middleware(['auth'])->group(function(){
     Route::GET('/Retur/{pengadaan}/{penerimaan}', [ReturController::class, 'create']);
     Route::POST('Retur/{pengadaan}/{penerimaan}', [ReturController::class, 'store']);
 
-    Route::POST('/{barang}', [PenjualanController::class, 'store_barang']);
-    Route::POST('/{barang}/{penjualan}', [PenjualanController::class, 'store']);
-    Route::DELETE ('/{detail_penjualan}/{penjualan}', [PenjualanController::class, 'destroy_detail']);
-    Route::DELETE ('/{penjualan}', [PenjualanController::class, 'destroy']);
-    Route::GET ('/{penjualan}', [PenjualanController::class, 'show']);
+    Route::POST('/beli/{barang}', [PenjualanController::class, 'store_barang']);
+    Route::POST('/beli/{barang}/{penjualan}', [PenjualanController::class, 'store']);
+    Route::DELETE ('/beli/{detail_penjualan}/{penjualan}', [PenjualanController::class, 'destroy_detail']);
+    Route::DELETE ('/beli/{penjualan}', [PenjualanController::class, 'destroy']);
+    Route::GET ('/beli/{penjualan}', [PenjualanController::class, 'show']);
 
     Route::match(['put', 'patch'],'Karyawan/restore/{item}', [UserController::class, 'restore']);
     Route::match(['put', 'patch'],'Satuan/restore/{item}', [SatuanController::class, 'restore']);

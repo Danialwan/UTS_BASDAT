@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\barang;
 use App\Models\penerimaan;
+use App\Models\retur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -55,7 +56,7 @@ class PenerimaanController extends Controller
     {
         // Session::flash('penerimaan[]', $request->penerimaan[]);
         // Session::flash('retur[]', $request->retur[]);
-
+        // return $request;
         $penerimaan = [
             'idpengadaan' => $id_pengadaan,
             'iduser' => Auth::user()->id,
@@ -84,13 +85,15 @@ class PenerimaanController extends Controller
         for ($i=0; $i < $arr_penerimaan ; $i++) {
 
             $detail_pengadaan = DB::table('detail_pengadaan')
+                                ->select('detail_pengadaan.*')
                                 ->where('idpengadaan', $id_pengadaan)
                                 ->get()[$i];
+
 
             $detail_penerimaan = [
                 'created_at' => now(),
                 'jumlah' => $request->penerimaan[$i],
-                'iddetail_pengadaan' => $detail_pengadaan->id,
+                'idbarang' => $detail_pengadaan->idbarang,
                 'idpenerimaan' => $penerimaan->id
             ];
             DB::table('detail_penerimaan')->insert($detail_penerimaan);
@@ -115,13 +118,13 @@ class PenerimaanController extends Controller
 
         $data_pengadaan = DB::table('pengadaan')->where('id', $id_pengadaan)->get();
 
-        $data = [
-            'pengadaan' => $pengadaan,
-            'detail_pengadaan' => $detail_pengadaan,
-            'vendor' =>  $vendor,
-            'data_barang' => $data_barang,
-            'data_pengadaan' => $data_pengadaan
-            ];
+        // $data = [
+        //     'pengadaan' => $pengadaan,
+        //     'idbarang' => $detail_pengadaan->idbarang,
+        //     'vendor' =>  $vendor,
+        //     'data_barang' => $data_barang,
+        //     'data_pengadaan' => $data_pengadaan
+        //     ];
 
         // Session::push('destroy', 'Berhasil menghapus data');
         return redirect('/vendor')->with('success', 'Berhasil menambahkan data penerimaan');
@@ -132,12 +135,15 @@ class PenerimaanController extends Controller
      */
     public function show(string $id)
     {
-        $detail_retur = DB::table('detail_retur')
-                        ->join('detail_penerimaan', 'detail_retur.iddetail_penerimaan', '=', 'detail_penerimaan.id')
-                        ->join ('detail_pengadaan', 'detail_pengadaan.id', '=', 'detail_penerimaan.iddetail_pengadaan')
-                        ->join ('barang', 'barang.id', '=', 'detail_pengadaan.idbarang')
-                        ->select('detail_retur.id', 'detail_retur.created_at','detail_retur.jumlah','detail_retur.alasan', 'barang.nama')
-                        ->where('idretur',$id)->get();
+        //CONTOH PENGGUNAAN STORE PROCEDURE
+
+        // $detail_retur = DB::table('detail_retur')
+        //                 ->join('detail_penerimaan', 'detail_retur.iddetail_penerimaan', '=', 'detail_penerimaan.id')
+        //                 // ->join ('detail_pengadaan', 'detail_pengadaan.id', '=', 'detail_penerimaan.iddetail_pengadaan')
+        //                 ->join ('barang', 'barang.id', '=', 'detail_penerimaan.idbarang')
+        //                 ->select('detail_retur.id', 'detail_retur.created_at','detail_retur.jumlah','detail_retur.alasan', 'barang.nama')
+        //                 ->where('idretur',$id)->get();
+        $detail_retur = DB::select("CALL show_detail_retur('$id')");
         $retur = DB::table('retur')->where('id', $id)->first();
 
         $data = [
@@ -164,8 +170,8 @@ class PenerimaanController extends Controller
         $pengadaan = DB::table('pengadaan')->where('id', $penerimaan->idpengadaan)->first();
 
         $detail_penerimaan = DB::table('detail_penerimaan')
-                            ->join ('detail_pengadaan', 'detail_penerimaan.iddetail_pengadaan', '=', 'detail_pengadaan.id')
-                            ->join ('barang', 'barang.id', '=', 'detail_pengadaan.idbarang')
+                            // ->join ('detail_pengadaan', 'detail_penerimaan.iddetail_pengadaan', '=', 'detail_pengadaan.id')
+                            ->join ('barang', 'barang.id', '=', 'detail_penerimaan.idbarang')
                             ->select('detail_penerimaan.*' ,'barang.nama', 'barang.harga')
                             ->where('detail_penerimaan.idpenerimaan', $id)
                             ->get();

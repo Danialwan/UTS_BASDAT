@@ -66,23 +66,31 @@ class PenjualanController extends Controller
             'subtotal_nilai' => $penjualan->subtotal_nilai + $barang->harga*$request->jumlah,
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
-
-
+        // CONTOH PENGGUNAAN FUNCTION
+        $result = DB::select('SELECT total_nilai(:idPenjualan, :ppn) as total', ['idPenjualan' => $penjualan->id, 'ppn' => $penjualan->ppn]);
         $update_penjualan = [
-            'total_nilai' => (DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal')) + ((DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal'))*($penjualan->ppn / 100)),
+            'total_nilai' => $result[0]->total
+            // DB::select("SELECT total_nilai('$penjualan->id','$penjualan->ppn')")[0]->$update_penjualan
+            // 'total_nilai' => (DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal')) + ((DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal'))*($penjualan->ppn / 100)),
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
 
         $data_barang = DB::table('barang')->get();
-        $detail_penjualan = DB::table('detail_penjualan')
-                            ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
-                            ->select('detail_penjualan.*', 'barang.nama')
-                            ->where('detail_penjualan.idpenjualan', $penjualan->id)
+
+        // CONTOH PENGGUNAAN VIEW
+        $detail_penjualan = DB::table('detail_penjualan_barang')
+                            ->where('idpenjualan', $penjualan->id)
                             ->get();
+
+        // $detail_penjualan = DB::table('detail_penjualan')
+        //                     ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
+        //                     ->select('detail_penjualan.*', 'barang.nama')
+        //                     ->where('detail_penjualan.idpenjualan', $penjualan->id)
+        //                     ->get();
         $data = [
             'data_barang' => $data_barang,
             'detail_penjualan' => $detail_penjualan,
@@ -113,21 +121,28 @@ class PenjualanController extends Controller
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
 
+        $result = DB::select('SELECT total_nilai(:idPenjualan, :ppn) as total', ['idPenjualan' => $penjualan->id, 'ppn' => $penjualan->ppn]);
         $update_penjualan = [
-            'total_nilai' => (DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal')) + ((DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal'))*($penjualan->ppn / 100)),
+            'total_nilai' => $result[0]->total
+            // 'total_nilai' => (DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal')) + ((DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal'))*($penjualan->ppn / 100)),
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
 
         $data_barang = DB::table('barang')->get();
-        $detail_penjualan = DB::table('detail_penjualan')
-                            ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
-                            ->select('detail_penjualan.*', 'barang.nama')
-                            ->where('detail_penjualan.idpenjualan', $penjualan->id)
+
+        $detail_penjualan = DB::table('detail_penjualan_barang')
+                            ->where('idpenjualan', $penjualan->id)
                             ->get();
+
+        // $detail_penjualan = DB::table('detail_penjualan')
+        //                     ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
+        //                     ->select('detail_penjualan.*', 'barang.nama')
+        //                     ->where('detail_penjualan.idpenjualan', $penjualan->id)
+        //                     ->get();
         $data = [
             'data_barang' => $data_barang,
             'detail_penjualan' => $detail_penjualan,
@@ -144,11 +159,16 @@ class PenjualanController extends Controller
     {
         $penjualan = DB::table('penjualan')->where('id',$id)->first();
         $data_barang = DB::table('barang')->get();
-        $detail_penjualan = DB::table('detail_penjualan')
-                            ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
-                            ->select('detail_penjualan.*', 'barang.nama')
-                            ->where('detail_penjualan.idpenjualan', $penjualan->id)
+
+        $detail_penjualan = DB::table('detail_penjualan_barang')
+                            ->where('idpenjualan', $penjualan->id)
                             ->get();
+
+                            // $detail_penjualan = DB::table('detail_penjualan')
+        //                     ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
+        //                     ->select('detail_penjualan.*', 'barang.nama')
+        //                     ->where('detail_penjualan.idpenjualan', $penjualan->id)
+        //                     ->get();
         $data = [
             'data_barang' => $data_barang,
             'detail_penjualan' => $detail_penjualan,
@@ -193,22 +213,28 @@ class PenjualanController extends Controller
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
         DB::table('detail_penjualan')->where('id', $id)->delete();
+        $result = DB::select('SELECT total_nilai(:idPenjualan, :ppn) as total', ['idPenjualan' => $penjualan->id, 'ppn' => $penjualan->ppn]);
 
         $update_penjualan = [
-            'total_nilai' => (DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal')) + ((DB::table('detail_penjualan')
-                                ->where('idpenjualan',$penjualan->id )
-                                ->sum('subtotal'))*($penjualan->ppn / 100)),
+            'total_nilai' => $result[0]->total
+            // 'total_nilai' => (DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal')) + ((DB::table('detail_penjualan')
+            //                     ->where('idpenjualan',$penjualan->id )
+            //                     ->sum('subtotal'))*($penjualan->ppn / 100)),
         ];
         DB::table('penjualan')->where('id', $penjualan->id)->update($update_penjualan);
 
         $data_barang = DB::table('barang')->get();
-        $detail_penjualan = DB::table('detail_penjualan')
-                            ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
-                            ->select('detail_penjualan.*', 'barang.nama')
-                            ->where('detail_penjualan.idpenjualan', $penjualan->id)
+
+        $detail_penjualan = DB::table('detail_penjualan_barang')
+                            ->where('idpenjualan', $penjualan->id)
                             ->get();
+        // $detail_penjualan = DB::table('detail_penjualan')
+        //                     ->join ('barang', 'detail_penjualan.idbarang', '=', 'barang.id')
+        //                     ->select('detail_penjualan.*', 'barang.nama')
+        //                     ->where('detail_penjualan.idpenjualan', $penjualan->id)
+        //                     ->get();
         $data = [
             'data_barang' => $data_barang,
             'detail_penjualan' => $detail_penjualan,

@@ -7,8 +7,9 @@
     <title>Laravel</title>
 
     <!-- Favicons -->
-    <link href="{{ URL::asset('assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ URL::asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    {{-- <link href="{{ URL::asset('assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ URL::asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
+    <link rel="icon" href="{{ URL::asset('icon.png') }}">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">

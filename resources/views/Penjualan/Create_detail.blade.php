@@ -45,7 +45,7 @@
                             <td>{{ $item->harga }}</td>
                             <td>{{ $item->status }}</td>
                             <td>
-                                <form class="row d-flex align-items-center" style="width:200px"  action="{{ '/'.$item->id.'/'.$penjualan->id }}" method="POST">
+                                <form class="row d-flex align-items-center" style="width:200px"  action="{{ '/beli/'.$item->id.'/'.$penjualan->id }}" method="POST">
                                     @csrf
                                     @method('POST')
                                     <div class="col-7 p-0">
@@ -95,7 +95,7 @@
                             <td>{{ $item->subtotal }}</td>
                             {{-- <td>{{ $item->status }}</td> --}}
                             <td>
-                                <form class="d-inline" action="{{ '/'.$item->id.'/'.$penjualan->id }}" method="POST">
+                                <form class="d-inline" action="{{ '/beli/'.$item->id.'/'.$penjualan->id }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Delete</button>

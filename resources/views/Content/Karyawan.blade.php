@@ -15,19 +15,24 @@
                       <!-- Floating Labels Form -->
                     <div class="card overflow-auto">
                         <h5 class="card-title">Edit Profile </h5>
-                      <form class="row g-3 my-3">
+                      <form method="POST" class="row g-3 my-3" action="{{ 'Karyawan/'.$data_akun->id }}">
+                        @csrf
+                        @method('PUT')
                         <div class="col-md-12">
                           <div class="form-floating">
-                            <input type="text" class="form-control" id="username" placeholder="username" name="username" value="{{ Session::get('username') }}">
+                            <input type="text" class="form-control" id="username" placeholder="username" name="username" value="{{ Auth::user()->username }}">
                             <label for="floatingName">Your Name</label>
                           </div>
                         </div>
                         <div class="col-md-4">
                           <div class="form-floating mb-3">
                             <select class="form-select" id="role" aria-label="role" name="role">
-                              <option value="{{ Session::get('role') }}" selected>Role</option>
+                              <option value="{{ Auth::user()->role }}" selected>{{ $data_akun->nama_role }}</option>
                               @foreach ( $roles as $role )
-                              <option value="{{ $role->id }}"> {{ $role->nama_role }} </option>
+                              @if ( $role->nama_role  ==  $data_akun->nama_role )
+                              @else
+                                <option value="{{ $role->id }}"> {{ $role->nama_role }} </option>
+                              @endif
                               @endforeach
                             </select>
                             <label for="role">State</label>
