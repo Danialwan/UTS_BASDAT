@@ -1,0 +1,63 @@
+//
+DELIMITER $$
+CREATE TRIGGER barang_baru AFTER INSERT ON barang 
+FOR EACH ROW BEGIN
+	INSERT INTO kartu_stok (created_at,updated_at,jenis_transaksi,masuk,keluar,stock,id_transaksi,idbarang) VALUES (now(),now(),1, 0,0,0,0,new.id);
+END $$
+DELIMITER ;
+
+//
+DELIMITER $$
+CREATE TRIGGER barang_masuk AFTER INSERT ON detail_penerimaan 
+FOR EACH ROW BEGIN
+    DECLARE old_max_id INT;
+    DECLARE stock_lama INT;
+    DECLARE stock_now INT;
+    
+    SELECT MAX(id) INTO old_max_id FROM kartu_stok WHERE idbarang = NEW.id;
+    SELECT stock INTO stock_lama FROM kartu_stok WHERE id = old_max_id;
+
+    SET stock_now = COALESCE(stock_lama, 0) + NEW.jumlah;
+
+    INSERT INTO kartu_stok (created_at, updated_at, jenis_transaksi, masuk, keluar, stock, id_transaksi, idbarang) 
+    VALUES (NOW(), NOW(), 2, NEW.jumlah, 0, stock_now, NEW.idpenerimaan, NEW.idbarang);
+END $$
+DELIMITER ;
+
+//
+
+DELIMITER //
+CREATE PROCEDURE show_detail_retur (IN id_retur INT)
+BEGIN
+	SELECT detail_retur.id, detail_retur.created_at, detail_retur.jumlah, detail_retur.alasan, barang.nama
+    FROM detail_retur JOIN detail_penerimaan ON detail_penerimaan.id = detail_retur.iddetail_penerimaan
+    JOIN barang ON detail_penerimaan.idbarang = barang.id
+    WHERE detail_retur.idretur = id_retur;
+END
+//
+DELIMITER ;
+
+
+//
+DELIMITER //
+CREATE FUNCTION total_nilai(id_penjualan INT(11), ppn INT(11))
+RETURNS INT(11)
+BEGIN
+    DECLARE total INT (11);
+    Set total = (SELECT SUM(subtotal) FROM detail_penjualan WHERE detail_penjualan.idpenjualan = id_penjualan) + ((SELECT SUM(subtotal) FROM detail_penjualan WHERE detail_penjualan.idpenjualan = id_penjualan)*ppn);
+   	
+    RETURN total;
+END
+//
+
+CREATE VIEW detail_penjualan_barang AS
+SELECT detail_penjualan.*,barang.nama 
+FROM detail_penjualan JOIN barang ON detail_penjualan.idbarang = barang.id
+
+
+PENGGUNAAN DI PROJECT
+VIEW TERDAPAT PADA CONTROLLER PENJUALAN LINE 83
+FUNCTION TERDAPAT PADA CONTROLLER PENJUALAN LINE 69
+STORE PROCEDURE TERDAPAT PADA CONTROLLER PENERIMAAN LINE 138
+TRIGGER SECARA OTOMATIS SETELAH MELAKUKAN INPUT MENGGUNAKAN CONTROLLER BARANG METHOD CREATE
+
